@@ -5,6 +5,9 @@ const session = require("express-session");
 
 const app = express();
 
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
@@ -20,7 +23,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "register.html"));
+  res.render("register");
 });
 
 app.post("/register", (req, res) => {
@@ -44,7 +47,7 @@ app.post("/register", (req, res) => {
 
 // LOGIN
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "login.html"));
+  res.render("login");
 });
 
 app.post("/login", (req, res) => {
@@ -83,49 +86,10 @@ app.get("/dashboard", (req, res) => {
         console.error("Erro ao buscar atividades:", err.message);
         return res.send("Erro ao carregar dashboard.");
       }
-      let html = `
-        <!DOCTYPE html>
-        <html lang="pt-br">
-        <head>
-          <meta charset="UTF-8">
-          <title>Dashboard</title>
-        </head>
-        <body>
-          <h1>Bem-vindo ao DevTrack</h1>
-          <p>Usuário: ${req.session.userEmail}</p>
-          <h2>Adicionar atividade</h2>
-          <form action="/activities" method="POST">
-            <input type="text" name="description" placeholder="Descrição" required>
-            <br><br>
-            <input type="number" name="hours" placeholder="Horas" step="0.5" required>
-            <br><br>
-            <input type="date" name="date" required>
-            <br><br>
-            <button type="submit">Adicionar</button>
-          </form>
-          <h2>Minhas atividades</h2>
-      `;
-      if (activities.length === 0) {
-        html += "<p>Nenhuma atividade cadastrada.</p>";
-      } else {
-        html += "<ul>";
-        activities.forEach((activity) => {
-          html += `
-            <li>
-              ${activity.description} -
-              ${activity.hours} horas -
-              ${activity.date}
-            </li>
-          `;
-        });
-        html += "</ul>";
-      }
-      html += `
-          <br><a href="/logout">Sair</a>
-        </body>
-        </html>
-      `;
-      res.send(html);
+      res.render("dashboard", {
+        user: req.session.userEmail,
+        activities: activities
+      });
     }
   );
 });
@@ -162,6 +126,70 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   });
 });
+
+// DELETE 
+app.post("/activities/delete/:id", (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
+  const activityId = req.params.id;
+  db.run(
+    "DELETE FROM activities WHERE id = ? AND user_id = ?",
+    [activityId, req.session.userId],
+    function (err) {
+      if (err) {
+        console.error("Erro ao deletar atividade:", err.message);
+        return res.send("Erro ao deletar atividade.");
+      }
+      res.redirect("/dashboard");
+    }
+  );
+});
+
+// EDIT
+app.get("/activities/edit/:id", (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
+  const activityId = req.params.id;
+  db.get(
+    "SELECT * FROM activities WHERE id = ? AND user_id = ?",
+    [activityId, req.session.userId],
+    (err, activity) => {
+      if (err) {
+        console.error("Erro ao buscar atividade:", err.message);
+        return res.send("Erro ao carregar atividade.");
+      }
+      if (!activity) {
+        return res.send("Atividade não encontrada.");
+      }
+      res.render("edit", { activity });
+    }
+  );
+});
+
+app.post("/activities/update/:id", (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
+  const activityId = req.params.id;
+  const { description, hours, date } = req.body;
+  if (!description || !hours || !date) {
+    return res.send("Preencha todos os campos.");
+  }
+  db.run(
+    "UPDATE activities SET description = ?, hours = ?, date = ? WHERE id = ? AND user_id = ?",
+    [description, hours, date, activityId, req.session.userId],
+    function (err) {
+      if (err) {
+        console.error("Erro ao atualizar atividade:", err.message);
+        return res.send("Erro ao atualizar atividade.");
+      }
+      res.redirect("/dashboard");
+    }
+  );
+});
+
 app.listen(5000, () => {
   console.log("Servidor rodando em http://localhost:5000");
 });

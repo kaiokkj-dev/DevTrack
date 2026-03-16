@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | DevTrack</title>
+</head>
+<body>
+    <h1>Bem-vindo ao DevTrack</h1>
+    <p>Usuário: <%= user %></p>
+    <p>Total de atividades: <%= activities.length %></p>
+    <h2>Adicionar atividade</h2>
+    <form action="/activities" method="POST">
+    <input
+        type="text"
+        name="description"
+        placeholder="Descrição"
+        required
+    />
+    <br /><br />
+    <input
+        type="number"
+        name="hours"
+        placeholder="Horas"
+        step="0.5"
+        required
+/>
+    <br /><br />
+    <input type="date" name="date" required />
+    <br /><br />
+    <button type="submit">Adicionar</button>
+    </form>
+    <h2>Minhas atividades</h2>
+    <% if (activities.length === 0) { %>
+    <p>Nenhuma atividade cadastrada.</p>
+    <% } else { %>
+    <ul>
+    <% activities.forEach((activity) => { %>
+        <li>
+            <strong><%= activity.description %></strong>
+            <br />
+            Horas: <%= activity.hours %>
+            <br />
+            Data: <%= activity.date %>
+            <br /><br />
+            <a href="/activities/edit/<%= activity.id %>">Editar</a>
+            <form
+                action="/activities/delete/<%= activity.id %>"
+                method="POST"
+                style="display: inline;"
+            >
+            <button type="submit">Excluir</button>
+            </form>
+        </li>
+        <% }) %>
+    </ul>
+    <% } %>
+    <br />
+    <a href="/logout">Sair</a>
+</body>
+</html>

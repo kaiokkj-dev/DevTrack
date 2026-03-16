@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar atividade | DevTrack</title>
+</head>
+<body>
+    <h1>Editar atividade</h1>
+    <form action="/activities/update/<%= activity.id %>" method="POST">
+    <input
+        type="text"
+        name="description"
+        value="<%= activity.description %>"
+        required
+    />
+    <br /><br />
+    <input
+        type="number"
+        name="hours"
+        step="0.5"
+        value="<%= activity.hours %>"
+        required
+    />
+    <br /><br />
+    <input
+        type="date"
+        name="date"
+        value="<%= activity.date %>"
+        required
+    />
+    <br /><br />
+    <button type="submit">Salvar alterações</button>
+    </form>
+    <br />
+    <a href="/dashboard">Voltar</a>
+</body>
+</html>
