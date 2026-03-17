@@ -16,6 +16,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(express.static("public"));
 
 // REGISTRAR
 app.get("/", (req, res) => {
@@ -49,11 +50,10 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login");
 });
-
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.send("Preencha email e senha.");
+    return res.redirect("/login?error=empty");
   }
   db.get(
     "SELECT * FROM users WHERE email = ? AND password = ?",
@@ -61,10 +61,10 @@ app.post("/login", (req, res) => {
     (err, user) => {
       if (err) {
         console.error("Erro no login:", err.message);
-        return res.send("Erro ao fazer login.");
+        return res.redirect("/login?error=server");
       }
       if (!user) {
-        return res.send("Email ou senha inválidos.");
+        return res.redirect("/login?error=invalid");
       }
       req.session.userId = user.id;
       req.session.userEmail = user.email;

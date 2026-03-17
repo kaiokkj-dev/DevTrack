@@ -1,18 +1,56 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.25">
 <meta charset="UTF-8">
-<title>Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | DevTrack</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
 </head>
-<body>
-    <h2>Entrar</h2>
+<body class="auth-page">
+<div class="auth-wrapper">
+    <div id="error-toast" class="toast hidden">
+    <span class="toast-icon">❌</span>
+    <span class="toast-text"></span>
+    </div>
+    <div class="auth-container">
+    <h1 class="logo">DevTrack</h1>
+    <h2 class="entry">LOGIN</h2>
     <form action="/login" method="POST">
-    <input type="email" name="email" placeholder="Email" required>
-    <br><br>
-    <input type="password" name="password" placeholder="Senha" required>
-    <br><br>
-    <button type="submit">Entrar</button>
-</form>
-    <p>Não tem conta? <a href="/register">Cadastre-se</a></p>
+        <input type="email" name="email" placeholder="E-mail" required>
+        <input type="password" name="password" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
+    </form>
+    </div>
+    <p class="auth-link">
+    NÃO TEM CONTA?
+    <a href="/register">CADASTRE-SE</a>
+    </p>
+</div>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+if (error) {
+    const toast = document.getElementById("error-toast");
+    const text = toast.querySelector(".toast-text");
+    let message = "";
+if (error === "empty") {
+        message = "Preencha email e senha.";
+    } else if (error === "invalid") {
+        message = "Email ou senha inválidos.";
+    } else if (error === "server") {
+        message = "Erro ao fazer login.";
+    }
+if (message) {
+        text.textContent = message;
+        toast.classList.remove("hidden");
+    setTimeout(() => {
+        toast.classList.add("hidden");
+        }, 3000);
+    }
+}
+</script>
 </body>
 </html>
