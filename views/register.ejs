@@ -1,21 +1,85 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Cadastro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register | DevTrack</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 </head>
+<body class="auth-page">
+<div class="auth-wrapper">
+    <div id="error-toast" class="toast hidden">
+    <span class="toast-icon">❌</span>
+    <span class="toast-text"></span>
+    </div>
 
-<body>
-<h2>Criar conta</h2>
+    <div class="auth-container">
+    <h1 class="logo">DevTrack</h1>
+    <h2 class="entry">REGISTER</h2>
 
-<form action="/register" method="POST">
-    <input type="email" name="email" placeholder="Email" required>
-    <br><br>
-    <input type="password" name="password" placeholder="Senha" required>
-    <br><br>
-    <button type="submit">Cadastrar</button>
+    <form action="/register" method="POST">
+        <input type="email" name="email" placeholder="E-mail" required>
+        <div class="input-group">
+        <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Senha (mín. 6 caracteres)"
+            minlength="6"
+            required
+        >
+        <span class="toggle-password" onclick="togglePassword()">
+            <i data-lucide="eye"></i>
+        </span>
+        </div>
+        <button type="submit">Criar conta</button>
     </form>
-    <p>Já tem conta? <a href="/login">Entrar</a></p>
+    </div>
+    <p class="auth-link">
+    JÁ TEM CONTA?
+    <a href="/login">ENTRAR</a>
+    </p>
+</div>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    if (error) {
+    const toast = document.getElementById("error-toast");
+    const text = toast.querySelector(".toast-text");
+    let message = "";
+    if (error === "empty") {
+        message = "Preencha todos os campos.";
+    } else if (error === "exists") {
+        message = "Esse e-mail já está cadastrado.";
+    } else if (error === "server") {
+        message = "Erro ao criar conta.";
+    } else if (error === "short") {
+        message = "A senha precisa ter no mínimo 6 caracteres.";
+    }
+    if (message) {
+        text.textContent = message;
+        toast.classList.remove("hidden");
+        setTimeout(() => {
+        toast.classList.add("hidden");
+        }, 3000);
+    }
+}
+lucide.createIcons();
+    function togglePassword() {
+    const input = document.getElementById("password");
+    const icon = document.querySelector(".toggle-password i");
+    if (input.type === "password") {
+        input.type = "text";
+        icon.setAttribute("data-lucide", "eye-off");
+    } else {
+    input.type = "password";
+        icon.setAttribute("data-lucide", "eye");
+    }
+    lucide.createIcons();
+    }
+</script>
 </body>
 </html>

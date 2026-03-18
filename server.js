@@ -30,7 +30,10 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.send("Preencha email e senha.");
+    return res.redirect("/register?error=empty");
+  }
+  if (password.length < 6) {
+    return res.redirect("/register?error=short");
   }
   db.run(
     "INSERT INTO users (email, password) VALUES (?, ?)",
@@ -38,9 +41,8 @@ app.post("/register", (req, res) => {
     function (err) {
       if (err) {
         console.error("Erro ao cadastrar usuário:", err.message);
-        return res.send("Erro ao cadastrar usuário. Talvez esse email já exista.");
+        return res.redirect("/register?error=exists");
       }
-      console.log("Usuário cadastrado com ID:", this.lastID);
       res.redirect("/login");
     }
   );

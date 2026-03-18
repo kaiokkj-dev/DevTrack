@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.25">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login | DevTrack</title>
+<script src="https://unpkg.com/lucide@latest"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
@@ -20,7 +20,19 @@
     <h2 class="entry">LOGIN</h2>
     <form action="/login" method="POST">
         <input type="email" name="email" placeholder="E-mail" required>
-        <input type="password" name="password" placeholder="Senha" required>
+        <div class="input-group">
+        <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Senha"
+            minlength="6"
+            required
+        >
+        <span class="toggle-password" onclick="togglePassword()">
+            <i data-lucide="eye"></i>
+        </span>
+        </div>
         <button type="submit">Entrar</button>
     </form>
     </div>
@@ -50,6 +62,19 @@ if (message) {
         toast.classList.add("hidden");
         }, 3000);
     }
+}
+    lucide.createIcons();
+    function togglePassword() {
+    const input = document.getElementById("password");
+    const icon = document.querySelector(".toggle-password i");
+    if (input.type === "password") {
+        input.type = "text";
+        icon.setAttribute("data-lucide", "eye-off");
+    } else {
+    input.type = "password";
+        icon.setAttribute("data-lucide", "eye");
+    }
+    lucide.createIcons();
 }
 </script>
 </body>

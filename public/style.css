@@ -8,7 +8,7 @@ font-size: 16px;
 /* página roxa */
 .auth-page{
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
     background-color: #0f051d;
     background-image:
         linear-gradient(135deg, rgba(120,0,255,0.08) 25%, transparent 25%),
@@ -131,6 +131,31 @@ font-size: 16px;
 }
 .hidden {
     display: none;
+}
+.input-group {
+    position: relative;
+}
+.input-group input {
+    width: 100%;
+    padding: 14px 45px 14px 14px; /* espaço à direita pro ícone */
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+
+    color: #a855f7;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password svg {
+    width: 18px;
+    height: 18px;
 }
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
