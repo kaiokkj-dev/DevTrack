@@ -63,7 +63,7 @@ app.post("/register", (req, res) => {
 
 // LOGIN
 app.get("/login", (req, res) => {
-  res.render("login");
+  res.render("login", { query: req.query });
 });
 
 app.post("/login", (req, res) => {
