@@ -46,28 +46,17 @@
     </p>
 </div>
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const error = params.get("error");
-    if (error) {
+const params = new URLSearchParams(window.location.search);
+const error = params.get("error");
+
+if (error) {
     const toast = document.getElementById("error-toast");
     const text = toast.querySelector(".toast-text");
-    let message = "";
-    if (error === "empty") {
-        message = "Preencha todos os campos.";
-    } else if (error === "exists") {
-        message = "Esse e-mail já está cadastrado.";
-    } else if (error === "server") {
-        message = "Erro ao criar conta.";
-    } else if (error === "short") {
-        message = "A senha precisa ter no mínimo 6 caracteres.";
-    }
-    if (message) {
-        text.textContent = message;
-        toast.classList.remove("hidden");
-        setTimeout(() => {
-        toast.classList.add("hidden");
-        }, 3000);
-    }
+  text.textContent = error; //
+    toast.classList.remove("hidden");
+    setTimeout(() => {
+    toast.classList.add("hidden");
+ }, 3000);
 }
 lucide.createIcons();
     function togglePassword() {
