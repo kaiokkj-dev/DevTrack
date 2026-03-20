@@ -45,12 +45,6 @@ O **DevTrack** foi desenvolvido com o objetivo de praticar o fluxo completo de d
 
 ---
 
-## 📸 Preview
-
-> Interface moderna com tema dark e identidade visual roxa 💜
-
----
-
 ## 🚀 Como rodar o projeto localmente
 
 ```bash
@@ -87,7 +81,7 @@ O projeto está hospedado no **Render** e pode ser acessado online pelo link aci
 
 ## 👨‍💻 Autor
 
-Desenvolvido por **Kaio**
+Desenvolvido por **Kaio-dev**
 
 ---
 
