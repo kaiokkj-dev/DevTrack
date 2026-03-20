@@ -44,26 +44,28 @@
     </p>
 </div>
 <script>
-    const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
+const error = params.get("error");
 const success = params.get("success");
-if (success) {
+
+if (error || success) {
     const toast = document.getElementById("error-toast");
     const text = toast.querySelector(".toast-text");
-    text.textContent = success;
+    text.textContent = error || success;
     toast.classList.remove("hidden");
     setTimeout(() => {
         toast.classList.add("hidden");
     }, 3000);
 }
-    lucide.createIcons();
-    function togglePassword() {
+lucide.createIcons();
+function togglePassword() {
     const input = document.getElementById("password");
     const icon = document.querySelector(".toggle-password i");
     if (input.type === "password") {
         input.type = "text";
         icon.setAttribute("data-lucide", "eye-off");
     } else {
-    input.type = "password";
+        input.type = "password";
         icon.setAttribute("data-lucide", "eye");
     }
     lucide.createIcons();
