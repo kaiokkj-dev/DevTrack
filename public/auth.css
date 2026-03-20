@@ -1,11 +1,3 @@
-
-body{
-font-family: 'Poppins', sans-serif;
-margin:0;
-padding:0;
-font-size: 16px;
-}
-/* página roxa */
 .auth-page{
     margin: 0;
     min-height: 100vh;
@@ -25,10 +17,9 @@ font-size: 16px;
     justify-content: center;
     align-items: center;
 }
-/* card */
+
 .auth-container{
     text-align: center;
-    border-radius: 5px; 
     background: rgba(41, 11, 71, 0.671);
     border: 1px solid rgba(113, 47, 175, 0.397);
     border-radius: 6px;
@@ -36,16 +27,15 @@ font-size: 16px;
     padding: 22px 36px;
     width: 100%;
     max-width: 500px;
-    
 }
-/* logo */
+
 .logo{
     color:#ffffff;
     margin-bottom: 10px;
     font-size: 4em;
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.521);
-
 }
+
 .entry{
     color: #912bff8f;
     text-shadow: 1px 1px 0px rgb(0, 0, 0);
@@ -54,7 +44,7 @@ font-size: 16px;
     letter-spacing: 1px;
     margin-top: 0;
 }
-/* inputs */
+
 .auth-container input{
     background: rgba(255,255,255,0.03);
     border: 1px solid #7c3aed;
@@ -65,16 +55,18 @@ font-size: 16px;
     transition: 0.2s ease;
     font-size: 16px;
 }
+
 .auth-container input:focus {
     border-color: #c084fc;
     box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.15);
 }
+
 .auth-container form {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
-/* botão */
+
 .auth-container button{
     width:100%;
     padding:14px;
@@ -86,24 +78,28 @@ font-size: 16px;
     cursor:pointer;
     margin-top:10px;
 }
+
 .auth-container button:hover{
     background:#5a0fb2;
     transform: translateY(-2px);
 }
-/* link */
+
 .auth-link {
     margin-top: 20px;
     color: #aaa;
     font-size: 16px;
 }
+
 .auth-link a {
     color: #a855f7;
     text-decoration: none;
     font-weight: bold;
 }
+
 .auth-link a:hover {
     text-decoration: underline;
 }
+
 .auth-wrapper {
     display: flex;
     flex-direction: column;
@@ -111,6 +107,7 @@ font-size: 16px;
     width: 100%;
     padding: 20px;
 }
+
 .toast {
     position: fixed;
     top: 20px;
@@ -129,25 +126,27 @@ font-size: 16px;
     z-index: 9999;
     animation: slideIn 0.3s ease;
 }
-.hidden {
-    display: none;
+.hidden { 
+    display: none; 
 }
+
 .input-group {
     position: relative;
 }
+
 .input-group input {
     width: 100%;
-    padding: 14px 45px 14px 14px; /* espaço à direita pro ícone */
+    padding: 14px 45px 14px 14px;
     border-radius: 3px;
     box-sizing: border-box;
 }
+
 .toggle-password {
     position: absolute;
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-
     color: #a855f7;
     display: flex;
     align-items: center;
@@ -157,6 +156,7 @@ font-size: 16px;
     width: 18px;
     height: 18px;
 }
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
@@ -165,17 +165,7 @@ input:-webkit-autofill:focus {
     border: 1px solid #7c3aed;
     transition: background-color 5000s ease-in-out 0s;
 }
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    
-}
+
 @media (max-width: 768px) {
     .auth-page {
         padding: 20px 16px;

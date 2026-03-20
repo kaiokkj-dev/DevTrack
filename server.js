@@ -16,7 +16,20 @@ app.use(
     saveUninitialized: false,
   })
 );
+
 app.use(express.static("public"));
+
+// SAUDAÇÃO DINÂMICA
+function getGreeting() {
+  const hour = new Date().getHours(); 
+  if (hour >= 5 && hour < 12) {
+    return "Bom dia";
+  } else if (hour >= 12 && hour < 18) {
+    return "Boa tarde";
+  } else {
+    return "Boa noite";
+  }
+}
 
 // REGISTRAR
 app.get("/", (req, res) => {
@@ -30,10 +43,10 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.redirect("/register?error=empty");
+    return res.redirect("/register?error=Preencha todos os campos");
   }
   if (password.length < 6) {
-    return res.redirect("/register?error=short");
+    return res.redirect("/register?error=A senha deve ter no mínimo 6 caracteres");
   }
   db.run(
     "INSERT INTO users (email, password) VALUES (?, ?)",
@@ -41,9 +54,9 @@ app.post("/register", (req, res) => {
     function (err) {
       if (err) {
         console.error("Erro ao cadastrar usuário:", err.message);
-        return res.redirect("/register?error=exists");
+        return res.redirect("/register?error=Esse email já está em uso");
       }
-      res.redirect("/login");
+      return res.redirect("/login?success=Conta criada com sucesso");
     }
   );
 });
@@ -52,10 +65,11 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login");
 });
+
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.redirect("/login?error=empty");
+    return res.redirect("/login?error=Preencha email e senha");
   }
   db.get(
     "SELECT * FROM users WHERE email = ? AND password = ?",
@@ -63,14 +77,14 @@ app.post("/login", (req, res) => {
     (err, user) => {
       if (err) {
         console.error("Erro no login:", err.message);
-        return res.redirect("/login?error=server");
+        return res.redirect("/login?error=Erro interno no login");
       }
       if (!user) {
-        return res.redirect("/login?error=invalid");
+        return res.redirect("/login?error=Email ou senha inválidos");
       }
       req.session.userId = user.id;
       req.session.userEmail = user.email;
-      res.redirect("/dashboard");
+      return res.redirect("/dashboard?success=Login realizado com sucesso");
     }
   );
 });
@@ -80,30 +94,41 @@ app.get("/dashboard", (req, res) => {
   if (!req.session.userId) {
     return res.redirect("/login");
   }
+  const userEmail = req.session.userEmail;
+  const greeting = getGreeting();
   db.all(
-    "SELECT * FROM activities WHERE user_id = ? ORDER BY date DESC, id DESC",
+    "SELECT * FROM activities WHERE user_id = ? ORDER BY date DESC",
     [req.session.userId],
     (err, activities) => {
       if (err) {
         console.error("Erro ao buscar atividades:", err.message);
-        return res.send("Erro ao carregar dashboard.");
+        return res.send("Erro ao buscar atividades.");
       }
+      const totalActivities = activities.length;
+      const totalHours = activities.reduce((sum, activity) => {
+        return sum + Number(activity.hours);
+      }, 0);
+      const latestActivity = activities.length > 0 ? activities[0] : null;
       res.render("dashboard", {
-        user: req.session.userEmail,
-        activities: activities
+        user: userEmail,
+        activities,
+        totalActivities,
+        totalHours,
+        latestActivity,
+        greeting,
       });
     }
   );
 });
 
-// CRIAR ACTIVITY
+// CRIAR ATIVIDADE
 app.post("/activities", (req, res) => {
   if (!req.session.userId) {
     return res.redirect("/login");
   }
   const { description, hours, date } = req.body;
   if (!description || !hours || !date) {
-    return res.send("Preencha todos os campos.");
+    return res.redirect("/dashboard?error=Preencha todos os campos");
   }
   db.run(
     "INSERT INTO activities (user_id, description, hours, date) VALUES (?, ?, ?, ?)",
@@ -111,25 +136,14 @@ app.post("/activities", (req, res) => {
     (err) => {
       if (err) {
         console.error("Erro ao salvar atividade:", err.message);
-        return res.send("Erro ao salvar atividade.");
+        return res.redirect("/dashboard?error=Erro ao salvar atividade");
       }
-      res.redirect("/dashboard");
+      return res.redirect("/dashboard?success=Atividade criada com sucesso");
     }
   );
 });
 
-// LOGOUT
-app.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Erro ao fazer logout:", err.message);
-      return res.send("Erro ao sair.");
-    }
-    res.redirect("/login");
-  });
-});
-
-// DELETE 
+// DELETE
 app.post("/activities/delete/:id", (req, res) => {
   if (!req.session.userId) {
     return res.redirect("/login");
@@ -141,14 +155,14 @@ app.post("/activities/delete/:id", (req, res) => {
     function (err) {
       if (err) {
         console.error("Erro ao deletar atividade:", err.message);
-        return res.send("Erro ao deletar atividade.");
+        return res.redirect("/dashboard?error=Erro ao excluir atividade");
       }
-      res.redirect("/dashboard");
+      return res.redirect("/dashboard?success=Atividade excluída com sucesso");
     }
   );
 });
 
-// EDIT
+// EDITAR - CARREGAR TELA
 app.get("/activities/edit/:id", (req, res) => {
   if (!req.session.userId) {
     return res.redirect("/login");
@@ -160,16 +174,17 @@ app.get("/activities/edit/:id", (req, res) => {
     (err, activity) => {
       if (err) {
         console.error("Erro ao buscar atividade:", err.message);
-        return res.send("Erro ao carregar atividade.");
+        return res.redirect("/dashboard?error=Erro ao carregar atividade");
       }
       if (!activity) {
-        return res.send("Atividade não encontrada.");
+        return res.redirect("/dashboard?error=Atividade não encontrada");
       }
       res.render("edit", { activity });
     }
   );
 });
 
+// EDITAR - SALVAR ALTERAÇÕES
 app.post("/activities/update/:id", (req, res) => {
   if (!req.session.userId) {
     return res.redirect("/login");
@@ -177,21 +192,31 @@ app.post("/activities/update/:id", (req, res) => {
   const activityId = req.params.id;
   const { description, hours, date } = req.body;
   if (!description || !hours || !date) {
-    return res.send("Preencha todos os campos.");
+    return res.redirect("/dashboard?error=Preencha todos os campos");
   }
+
   db.run(
     "UPDATE activities SET description = ?, hours = ?, date = ? WHERE id = ? AND user_id = ?",
     [description, hours, date, activityId, req.session.userId],
     function (err) {
       if (err) {
         console.error("Erro ao atualizar atividade:", err.message);
-        return res.send("Erro ao atualizar atividade.");
+        return res.redirect("/dashboard?error=Erro ao atualizar atividade");
       }
-      res.redirect("/dashboard");
+      return res.redirect("/dashboard?success=Atividade atualizada com sucesso");
     }
   );
 });
-
+// LOGOUT
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Erro ao fazer logout:", err.message);
+      return res.send("Erro ao sair.");
+    }
+    res.redirect("/login?success=Logout realizado com sucesso");
+  });
+});
 app.listen(5000, () => {
   console.log("Servidor rodando em http://localhost:5000");
 });

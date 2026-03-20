@@ -1,62 +1,167 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard | DevTrack</title>
-<link rel="stylesheet" href="/style.css">
+<link rel="icon" type="image/png" href="/fav1.png">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/global.css">
+    <link rel="stylesheet" href="/dashboard.css">
 </head>
 <body>
-    <h1>Bem-vindo ao DevTrack</h1>
-    <p>Usuário: <%= user %></p>
-    <p>Total de atividades: <%= activities.length %></p>
-    <h2>Adicionar atividade</h2>
-    <form action="/activities" method="POST">
-    <input
-        type="text"
-        name="description"
-        placeholder="Descrição"
-        required
-    />
-    <br /><br />
-    <input
-        type="number"
-        name="hours"
-        placeholder="Horas"
-        step="0.5"
-        required
-/>
-    <br /><br />
-    <input type="date" name="date" required />
-    <br /><br />
-    <button type="submit">Adicionar</button>
-    </form>
-    <h2>Minhas atividades</h2>
-    <% if (activities.length === 0) { %>
-    <p>Nenhuma atividade cadastrada.</p>
-    <% } else { %>
-    <ul>
-    <% activities.forEach((activity) => { %>
-        <li>
-            <strong><%= activity.description %></strong>
-            <br />
-            Horas: <%= activity.hours %>
-            <br />
-            Data: <%= activity.date %>
-            <br /><br />
-            <a href="/activities/edit/<%= activity.id %>">Editar</a>
-            <form
-                action="/activities/delete/<%= activity.id %>"
-                method="POST"
-                style="display: inline;"
-            >
-            <button type="submit">Excluir</button>
+    <main class="dashboard">
+        <header class="dashboard-hero">
+            <div class="dashboard-hero-left">
+                <h1>DevTrack</h1>
+                <p><%= greeting %>, <span><%= user %></span></p>
+                <p>Total de atividades: <span><%= totalActivities %></span></p>
+            </div>
+            <div class="dashboard-hero-right">
+                <a href="/logout" class="logout-btn">
+                    <i data-lucide="log-out"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </header>
+<section class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon icon-activities">
+                <i data-lucide="clipboard-list"></i>
+            </div>
+            <p class="stat-label">Atividades</p>
+        </div>
+        <h3><%= totalActivities %></h3>
+        <span>Registros no sistema</span>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon icon-hours">
+                <i data-lucide="clock-3"></i>
+            </div>
+            <p class="stat-label">Horas totais</p>
+        </div>
+        <h3><%= totalHours %>h</h3>
+        <span>Total acumulado nas atividades</span>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon icon-latest">
+                <i data-lucide="calendar-days"></i>
+            </div>
+            <p class="stat-label">Última atividade</p>
+        </div>
+        <h3><%= latestActivity ? latestActivity.description : "Nenhuma" %></h3>
+        <span><%= latestActivity ? latestActivity.date : "Sem registros ainda" %></span>
+    </div>
+</section>
+    <section class="activity-form-section">
+      <div class="section-header">
+        <h2>Adicionar atividade</h2>
+          <p>Preencha os campos abaixo para registrar uma nova atividade.</p>
+      </div>
+        <form action="/activities" method="POST" class="activity-form">
+          <input
+            type="text"
+            name="description"
+            placeholder="Ex: Estudar HTML e CSS"
+            required
+              >
+          <input
+            type="number"
+            name="hours"
+            placeholder="Horas trabalhadas"
+            step="0.5"
+            required
+              >
+          <input
+            type="date"
+            name="date"
+            required
+              >
+                <button type="submit">Adicionar atividade</button>
             </form>
-        </li>
-        <% }) %>
-    </ul>
-    <% } %>
-    <br />
-    <a href="/logout">Sair</a>
+        </section>
+        <section class="activity-list-section">
+          <div class="section-header">
+              <h2>Minhas atividades</h2>
+              <p>Acompanhe, edite ou remova seus registros.</p>
+          </div>
+          <% if (activities.length === 0) { %>
+              <p class="empty-message">
+                Nenhuma atividade cadastrada ainda.
+              </p>
+        <% } else { %>
+          <ul class="activity-list">
+            <% activities.forEach((activity) => { %>
+              <li class="activity-card">
+                <div class="activity-top">
+                    <strong><%= activity.description %></strong>
+                      <span class="hours-badge">
+                        <span><%= activity.hours %>h</span>
+                          </span>
+                            </div>
+                            <div class="activity-meta">
+                                <p><span class="meta-label">Horas:</span> <%= activity.hours %></p>
+                                <p><span class="meta-label">Data:</span> <%= activity.date %></p>
+                            </div>
+                            <div class="activity-actions">
+                                <a href="/activities/edit/<%= activity.id %>" class="action-btn edit-btn" aria-label="Editar atividade">
+                                    <i data-lucide="pencil"></i>
+                                    <span>Editar</span>
+                                </a>
+                                <form
+                                    action="/activities/delete/<%= activity.id %>"
+                                    method="POST"
+                                    onsubmit="return confirm('Tem certeza que deseja excluir esta atividade?')"
+                                >
+                                    <button type="submit" class="action-btn delete-btn" aria-label="Excluir atividade">
+                                        <i data-lucide="trash-2"></i>
+                                        <span>Excluir</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        </section>
+</main>
+<footer class="app-footer">
+<p>DevTrack © 2026. Todos os direitos reservados.</p>
+</footer>
+<div id="toast" class="toast hidden">
+    <span id="toast-icon">⚠️</span>
+    <span id="toast-text"></span>
+</div>
+<script>
+    lucide.createIcons();
+    function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const text = document.getElementById("toast-text");
+        const icon = document.getElementById("toast-icon");
+        text.textContent = message;
+        toast.classList.remove("hidden", "success", "error");
+        toast.classList.add(type);
+        if (type === "success") {
+            icon.textContent = "✅";
+        } else {
+            icon.textContent = "❌";
+        }
+        setTimeout(() => {
+            toast.classList.add("hidden");
+        }, 3000);
+    }
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success")) {
+        showToast(params.get("success"), "success");
+    }
+    if (params.get("error")) {
+        showToast(params.get("error"), "error");
+    }
+</script>
 </body>
 </html>
