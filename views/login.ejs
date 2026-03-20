@@ -45,25 +45,15 @@
 </div>
 <script>
     const params = new URLSearchParams(window.location.search);
-    const error = params.get("error");
-if (error) {
+const success = params.get("success");
+if (success) {
     const toast = document.getElementById("error-toast");
     const text = toast.querySelector(".toast-text");
-    let message = "";
-if (error === "empty") {
-        message = "Preencha email e senha.";
-    } else if (error === "invalid") {
-        message = "Email ou senha inválidos.";
-    } else if (error === "server") {
-        message = "Erro ao fazer login.";
-    }
-if (message) {
-        text.textContent = message;
-        toast.classList.remove("hidden");
+    text.textContent = success;
+    toast.classList.remove("hidden");
     setTimeout(() => {
         toast.classList.add("hidden");
-        }, 3000);
-    }
+    }, 3000);
 }
     lucide.createIcons();
     function togglePassword() {
