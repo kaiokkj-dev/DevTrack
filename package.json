@@ -1,10 +1,11 @@
 {
   "name": "devtrack",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sistema simples para registrar atividades de estudo ou trabalho.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,14 @@
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "sqlite3": "^6.0.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaiokkj-dev/DevTrack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kaiokkj-dev/DevTrack/issues"
+  },
+  "homepage": "https://github.com/kaiokkj-dev/DevTrack#readme"
 }
