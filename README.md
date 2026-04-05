@@ -6,7 +6,7 @@ Sistema web para registrar e acompanhar atividades de estudo ou trabalho de form
 
 ## 🔗 Acesse o projeto
 
-👉 https://devtrack-c32o.onrender.com/
+👉 https://devtrack-production-4780.up.railway.app/register
 
 ---
 
