@@ -28,7 +28,37 @@
     width: 100%;
     max-width: 500px;
 }
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    background: transparent;
+    color: #ffffff;
+    font-weight: 600;
+    border: 1px solid #dddddd8e;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.google-btn img {
+    width: 18px;
+    height: 18px;
+}
+.google-btn:hover {
+    background: rgba(41, 11, 71, 0.671);
+    border-color: #7c3aed;
+    transform: translateY(-2px)
+}
+.google-btn:active {
+    transform: scale(0.98);
+}
 .logo{
     color:#ffffff;
     margin-bottom: 10px;

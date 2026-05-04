@@ -36,6 +36,10 @@
         </span>
         </div>
         <button type="submit">Entrar</button>
+        <a href="/auth/google" class="google-btn">
+  <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"> 
+  <span>Continuar com Google</span>
+</a>
     </form>
     </div>
     <p class="auth-link">
@@ -51,16 +55,24 @@ const success = params.get("success");
 if (error || success) {
     const toast = document.getElementById("error-toast");
     const text = toast.querySelector(".toast-text");
+    const icon = toast.querySelector(".toast-icon");
+
     text.textContent = error || success;
+    icon.textContent = error ? "❌" : "✅";
+
     toast.classList.remove("hidden");
+
     setTimeout(() => {
         toast.classList.add("hidden");
     }, 3000);
 }
+
 lucide.createIcons();
+
 function togglePassword() {
     const input = document.getElementById("password");
     const icon = document.querySelector(".toggle-password i");
+
     if (input.type === "password") {
         input.type = "text";
         icon.setAttribute("data-lucide", "eye-off");
@@ -68,6 +80,7 @@ function togglePassword() {
         input.type = "password";
         icon.setAttribute("data-lucide", "eye");
     }
+
     lucide.createIcons();
 }
 </script>
