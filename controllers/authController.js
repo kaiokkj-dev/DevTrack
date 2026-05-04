@@ -1,7 +1,7 @@
 const db = require("../database/db");
 const bcrypt = require("bcrypt");
 
-// LOGIN
+//LOGIN
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
