@@ -9,32 +9,43 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
-    (accessToken, refreshToken, profile, done) => {
-      const email = profile.emails[0].value;
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const email = profile.emails[0].value;
 
-      db.get("SELECT * FROM users WHERE email = ?", [email], (err, user) => {
-        if (err) return done(err);
+        const { data: existingUser, error: findError } = await db
+          .from("users")
+          .select("*")
+          .eq("email", email)
+          .single();
 
-        if (user) {
-          return done(null, user);
+        if (existingUser) {
+          return done(null, existingUser);
         }
 
-        db.run(
-          "INSERT INTO users (email, password) VALUES (?, ?)",
-          [email, "google"],
-          function (err) {
-            if (err) return done(err);
+        if (findError && findError.code !== "PGRST116") {
+          return done(findError);
+        }
 
-            db.get(
-              "SELECT * FROM users WHERE id = ?",
-              [this.lastID],
-              (err, newUser) => {
-                return done(err, newUser);
-              }
-            );
-          }
-        );
-      });
+        const { data: newUser, error: insertError } = await db
+          .from("users")
+          .insert([
+            {
+              email,
+              password: "google",
+            },
+          ])
+          .select()
+          .single();
+
+        if (insertError) {
+          return done(insertError);
+        }
+
+        return done(null, newUser);
+      } catch (err) {
+        return done(err);
+      }
     }
   )
 );
@@ -43,10 +54,22 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-  db.get("SELECT * FROM users WHERE id = ?", [id], (err, user) => {
-    done(err, user);
-  });
+passport.deserializeUser(async (id, done) => {
+  try {
+    const { data: user, error } = await db
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      return done(error);
+    }
+
+    return done(null, user);
+  } catch (err) {
+    return done(err);
+  }
 });
 
 module.exports = passport;

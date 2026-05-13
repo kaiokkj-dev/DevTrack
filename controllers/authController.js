@@ -1,7 +1,7 @@
 const db = require("../database/db");
 const bcrypt = require("bcrypt");
 
-//LOGIN
+// LOGIN
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -9,13 +9,14 @@ exports.login = async (req, res) => {
     return res.redirect("/login?error=Preencha email e senha");
   }
 
-  db.get("SELECT * FROM users WHERE email = ?", [email], async (err, user) => {
-    if (err) {
-      console.error("Erro no login:", err.message);
-      return res.redirect("/login?error=Erro interno no login");
-    }
+  try {
+    const { data: user, error } = await db
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .single();
 
-    if (!user) {
+    if (error || !user) {
       return res.redirect("/login?error=Email ou senha inválidos");
     }
 
@@ -29,7 +30,10 @@ exports.login = async (req, res) => {
     req.session.userEmail = user.email;
 
     return res.redirect("/dashboard?success=Login realizado com sucesso");
-  });
+  } catch (err) {
+    console.error("Erro no login:", err.message);
+    return res.redirect("/login?error=Erro interno no login");
+  }
 };
 
 // REGISTER
@@ -47,23 +51,28 @@ exports.register = async (req, res) => {
   try {
     const hash = await bcrypt.hash(password, 10);
 
-    db.run(
-      "INSERT INTO users (email, password) VALUES (?, ?)",
-      [email, hash],
-      function (err) {
-        if (err) {
-          console.error("Erro ao cadastrar:", err.message);
-          return res.redirect("/register?error=Esse email já está em uso");
-        }
+    const { error } = await db
+      .from("users")
+      .insert([
+        {
+          email,
+          password: hash,
+        },
+      ]);
 
-        res.redirect("/login?success=Conta criada com sucesso");
-      }
-    );
-  } catch (error) {
-    console.error("Erro no bcrypt:", error.message);
-    res.redirect("/register?error=Erro ao cadastrar");
+    if (error) {
+      console.error("Erro ao cadastrar:", error.message);
+      return res.redirect("/register?error=Esse email já está em uso");
+    }
+
+    return res.redirect("/login?success=Conta criada com sucesso");
+  } catch (err) {
+    console.error("Erro no cadastro:", err.message);
+    return res.redirect("/register?error=Erro ao cadastrar");
   }
 };
+
+// LOGOUT
 exports.logout = (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
